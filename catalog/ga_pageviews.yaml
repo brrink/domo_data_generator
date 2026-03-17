@@ -1,0 +1,72 @@
+dataset:
+  name: Google Analytics - Page Views
+  domo_id: c187089b-25e3-4b52-8d8a-fbcd964212c9
+  source_type: google_analytics
+  description: Sample Google Analytics page-level data
+  row_count: 10000
+schema:
+- name: Date
+  type: DATE
+  generator: date_range
+  start_days_ago: 90
+  end_days_ahead: 0
+  rolling: true
+- name: PagePath
+  type: STRING
+  generator: ga_page_path
+- name: PageTitle
+  type: STRING
+  generator: random_choice
+  choices:
+  - Home
+  - About Us
+  - Pricing
+  - Contact
+  - Blog
+  - Features
+  - Demo Request
+  - Sign Up
+  - Login
+  - Documentation
+  - Support
+  - Careers
+  - Getting Started Guide
+  - Best Practices
+  - Case Study
+  - Product Overview
+  - Enterprise
+  - Integrations
+- name: Pageviews
+  type: LONG
+  generator: random_int
+  min: 1
+  max: 500
+- name: UniquePageviews
+  type: LONG
+  generator: random_int
+  min: 1
+  max: 400
+- name: AvgTimeOnPage
+  type: DECIMAL
+  generator: random_decimal
+  min: 5
+  max: 300
+  precision: 1
+- name: EntranceRate
+  type: DECIMAL
+  generator: random_decimal
+  min: 0
+  max: 1
+  precision: 4
+- name: ExitRate
+  type: DECIMAL
+  generator: random_decimal
+  min: 0
+  max: 1
+  precision: 4
+- name: Source
+  type: STRING
+  generator: ga_source
+- name: DeviceCategory
+  type: STRING
+  generator: ga_device_category

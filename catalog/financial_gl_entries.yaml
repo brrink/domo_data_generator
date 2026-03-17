@@ -1,0 +1,74 @@
+dataset:
+  name: NetSuite - General Ledger
+  domo_id: 6a794e81-71ad-4d3b-aecf-6fbaa5d59db1
+  source_type: netsuite
+  description: Sample NetSuite-style general ledger journal entries
+  row_count: 5000
+schema:
+- name: JournalEntryId
+  type: STRING
+  generator: sequence
+  template: JE-{i:06d}
+  min: 1
+- name: TransactionDate
+  type: DATE
+  generator: date_range
+  start_days_ago: 365
+  end_days_ahead: 0
+  rolling: true
+- name: PostingDate
+  type: DATE
+  generator: date_range
+  start_days_ago: 360
+  end_days_ahead: 0
+  rolling: true
+- name: AccountCode
+  type: STRING
+  generator: gl_account_code
+- name: AccountName
+  type: STRING
+  generator: gl_account_name
+  source_column: AccountCode
+- name: Department
+  type: STRING
+  generator: department
+- name: DebitCredit
+  type: STRING
+  generator: debit_credit
+- name: Amount
+  type: DECIMAL
+  generator: random_decimal
+  min: 10
+  max: 100000
+  precision: 2
+- name: Memo
+  type: STRING
+  generator: random_choice
+  choices:
+  - Monthly accrual
+  - Revenue recognition
+  - Payroll entry
+  - Vendor payment
+  - Customer receipt
+  - Depreciation
+  - Prepaid expense amortization
+  - Intercompany transfer
+  - Tax adjustment
+  - Closing entry
+- name: JournalType
+  type: STRING
+  generator: journal_type
+- name: CreatedBy
+  type: STRING
+  generator: entity_ref
+  entity: sales_rep
+  field: full_name
+- name: FiscalPeriod
+  type: STRING
+  generator: fiscal_period
+  source_column: TransactionDate
+- name: EntityName
+  type: STRING
+  generator: entity_ref
+  entity: company
+  field: name

@@ -1,0 +1,76 @@
+dataset:
+  name: Salesforce - Contacts
+  domo_id: b582e09c-8f15-43f7-977a-c810f36f16c1
+  source_type: salesforce
+  description: Sample Salesforce contacts linked to accounts
+  row_count: 1500
+schema:
+- name: ContactId
+  type: STRING
+  generator: sf_id
+  template: '003'
+- name: FirstName
+  type: STRING
+  generator: entity_ref
+  entity: person
+  field: first_name
+- name: LastName
+  type: STRING
+  generator: entity_ref
+  entity: person
+  field: last_name
+- name: Email
+  type: STRING
+  generator: entity_ref
+  entity: person
+  field: email
+- name: Phone
+  type: STRING
+  generator: entity_ref
+  entity: person
+  field: phone
+- name: Title
+  type: STRING
+  generator: entity_ref
+  entity: person
+  field: title
+- name: AccountName
+  type: STRING
+  generator: entity_ref
+  entity: company
+  field: name
+- name: Department
+  type: STRING
+  generator: department
+- name: LeadSource
+  type: STRING
+  generator: random_choice
+  choices:
+  - Web
+  - Phone Inquiry
+  - Partner Referral
+  - Trade Show
+  - Email Campaign
+  - Social Media
+- name: MailingCity
+  type: STRING
+  generator: entity_ref
+  entity: company
+  field: city
+- name: MailingState
+  type: STRING
+  generator: entity_ref
+  entity: company
+  field: state
+- name: CreatedDate
+  type: DATETIME
+  generator: date_range
+  start_days_ago: 730
+  end_days_ahead: 0
+  rolling: true
+- name: LastActivityDate
+  type: DATE
+  generator: date_range
+  start_days_ago: 60
+  end_days_ahead: 0
+  rolling: true

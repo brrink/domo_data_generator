@@ -1,0 +1,293 @@
+# Domo App Platform Custom App Development
+
+You are helping build a Domo App Platform Custom App. This is a client-side web application that runs inside the Domo platform and uses Domo's App Framework APIs.
+
+**Important:** Do NOT confuse the App Platform/Framework APIs with Domo's Public API or Product API - they are different. The App Platform APIs are specifically for custom apps running inside Domo.
+
+---
+
+## ⚠️ Server-Side Rendering Check
+
+**Domo custom apps are client-side only.** There is no server to render pages — Domo serves static files.
+
+When you first look at a project (especially one from Lovable, v0, or similar tools), immediately check for server-side rendering (SSR). If SSR is present, **stop and warn the user** before proceeding.
+
+### Signs of SSR (incompatible with Domo):
+- Next.js with `getServerSideProps`, `getStaticProps`, or App Router server components
+- Remix with loaders or actions
+- SvelteKit with `+page.server.js` or `+server.js` files
+- Nuxt.js with server routes
+- `pages/api/` or `app/api/` directories (API routes)
+- Server-side `process.env` usage for secrets
+- Database connections in page components
+- `"use server"` directives
+
+### If SSR is detected:
+1. **Immediately alert the user** that the project uses server-side rendering
+2. Explain that Domo custom apps cannot use SSR — they must be pure client-side apps
+3. Recommend refactoring to a client-side only approach (React + Vite is recommended)
+4. If they need server-side logic, suggest using Domo Code Engine instead
+
+---
+
+## Domo App Framework APIs
+
+The following APIs are available to custom apps via the `domo.js` library (automatically included when running in Domo):
+
+| API | Purpose |
+|-----|---------|
+| **Data API** | Query datasets mapped in manifest (`/data/v1/`, `/sql/v1/`) |
+| **AppDB** | Document-style collections for app storage (`/domo/datastores/v1/collections/`) |
+| **AI Service Layer** | Text generation, image-to-text (`/domo/ai/v1/`) |
+| **Code Engine** | Server-side functions for secure operations (`/domo/codeengine/v2/packages/`) |
+| **Workflows** | Trigger automation workflows (`/domo/workflow/v1/models/`) |
+| **Files** | File storage and retrieval |
+| **Filesets** | Grouped file management |
+| **Groups** | Domo group information |
+| **User** | Current user context |
+| **Task Center** | Task management |
+
+### When to Include Additional API Documentation
+
+This file provides core App Platform knowledge. When working with specific APIs, add the corresponding detailed guide to your context (toolkit/query-first):
+
+| Working on... | Include this file | What you'll get |
+|---------------|------------------|-----------------|
+| **Querying Domo datasets** | `domo-data-api.md` | `@domoinc/query`-first patterns, SQL caveats, manifest gotchas |
+| **Storing app data (collections)** | `domo-appdb.md` | `AppDBClient`-first CRUD/query/update patterns |
+| **AI features (text/image)** | `domo-ai-endpoints.md` | `AIClient`-first usage and response parsing (`data`/`body`) |
+| **Calling server-side functions** | `domo-code-engine.md` | `CodeEngineClient`-first invocation and manifest mapping |
+| **Triggering workflows** | `domo-workflow.md` | `WorkflowClient`-first execution/status patterns |
+| **Migrating from Google AI Studio** | `google-ai-studio-to-domo.md` | Build pipeline setup, environment variables, deployment |
+| **Building custom connectors** | `domo-custom-connector-ide.md` | Authentication, data processing, pagination patterns |
+
+**Example usage:**
+- *"I need to fetch data from a Domo dataset"* → Add `domo-data-api.md` to context
+- *"I need to store user preferences"* → Add `domo-appdb.md` to context
+- *"I need AI text generation"* → Add `domo-ai-endpoints.md` to context
+
+Legacy endpoint-first documents are preserved in `archive/legacy-rules/` and are non-canonical.
+
+---
+
+## Installing domo.js (ryuu.js)
+
+**React / npm projects:**
+```bash
+npm install ryuu.js
+```
+```javascript
+import domo from 'ryuu.js';
+```
+
+**Vanilla JavaScript (CDN):**
+```html
+<script src="https://app.unpkg.com/ryuu.js@5.1.2"></script>
+```
+
+---
+
+## domo.js Utilities
+
+Beyond the APIs, domo.js provides useful utilities for interacting with the Domo environment:
+
+### Environment Info
+```javascript
+console.log(domo.env.userId);    // Current user ID
+console.log(domo.env.customer);  // Customer/instance name
+console.log(domo.env.pageId);    // Current page ID
+console.log(domo.env.locale);    // Locale (e.g., 'en-US')
+console.log(domo.env.platform);  // 'desktop' or 'mobile'
+```
+
+### Event Listeners
+```javascript
+// React to dataset updates on the page
+domo.onDataUpdated((alias) => {
+  console.log(`Dataset ${alias} was updated`);
+  // Refresh your data or do nothing to prevent auto-reload
+});
+
+// React to page filter changes
+domo.onFiltersUpdated((filters) => {
+  console.log('Filters changed:', filters);
+  // Apply filters to your visualization
+});
+
+// React to Domo variable changes
+domo.onVariablesUpdated((variables) => {
+  console.log('Variables updated:', variables);
+});
+```
+
+### Navigation
+**Important:** Standard anchor tags with `href` do NOT work properly in Domo apps. You must use `domo.navigate()`:
+
+```javascript
+// Navigate within Domo
+domo.navigate('/page/123456789');
+
+// Open in new tab
+domo.navigate('/page/123456789', true);
+
+// External URLs also work
+domo.navigate('https://example.com', true);
+```
+
+### Fetch Multiple Datasets
+```javascript
+// Load multiple datasets in parallel
+const [sales, customers, products] = await domo.getAll([
+  '/data/v1/sales',
+  '/data/v1/customers',
+  '/data/v1/products'
+]);
+```
+
+### Update Page Filters Programmatically
+```javascript
+domo.requestFiltersUpdate(
+  [
+    {
+      column: 'category',
+      operator: 'IN',
+      values: ['Electronics', 'Clothing'],
+      dataType: 'STRING'
+    }
+  ],
+  true, // apply to page
+  () => console.log('Filter update acknowledged'),
+  (response) => console.log('Filter update completed:', response)
+);
+```
+
+---
+
+## manifest.json
+
+The `manifest.json` file is critical - it declares all external resources your app needs. Domo uses this to:
+1. Know which datasets, collections, workflows, and code engine functions to connect
+2. Map aliases (used in your code) to actual Domo resource IDs (configured at publish time)
+
+### Basic structure
+```json
+{
+  "name": "My App Name",
+  "version": "1.0.0",
+  "id": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+  "fullpage": true,
+  "size": {
+    "width": 4,
+    "height": 3
+  },
+  "datasetsMapping": [],
+  "collections": [],
+  "workflowMapping": [],
+  "packageMapping": []
+}
+```
+
+### Key properties
+- `name` / `version` - App metadata
+- `id` - **Generated on first publish** (see deployment section)
+- `fullpage` - Set `true` for full-page apps
+- `size` - Card dimensions (width/height in grid units)
+- `datasetsMapping` - Datasets the app can query
+- `collections` - AppDB collections for storage
+- `workflowMapping` - Workflows the app can trigger
+- `packageMapping` - Code Engine functions the app can call
+
+### Required files
+- `manifest.json` - App configuration (required)
+- `thumbnail.png` - App thumbnail image (required, must be alongside manifest.json)
+
+---
+
+## Build & Deploy Workflow
+
+### Prerequisites
+- Node.js installed
+- Domo CLI installed (`npm install -g @domoinc/ryuu`)
+
+### Local development
+```bash
+npm install          # Install dependencies
+npm run dev          # Start dev server (usually Vite)
+```
+
+For API calls to work locally, you need ryuu-proxy configured and `domo login` authenticated.
+
+### Build for production
+```bash
+npm run build        # Outputs to dist/ (Vite) or build/ (CRA)
+```
+
+### Domo CLI Authentication
+```bash
+domo login           # Authenticate with your Domo instance
+```
+
+You'll be prompted for your Domo instance URL and credentials.
+
+### Publishing
+```bash
+cd dist              # Change to build output directory
+domo publish         # Publish to Domo
+```
+
+**Important - First publish:**
+- On first publish, Domo generates a new `id` for your app
+- This ID appears in the published `manifest.json` in your dist folder
+- **You must copy this ID back to your source `manifest.json`** (e.g., `public/manifest.json`)
+- If you don't, every publish creates a NEW app instead of updating the existing one
+
+```bash
+# After first publish, copy the generated ID:
+# dist/manifest.json → public/manifest.json (just the "id" field)
+```
+
+### Subsequent publishes
+Once the ID is in your source manifest:
+```bash
+npm run build && cd dist && domo publish
+```
+
+---
+
+## Base Path Configuration (Vite)
+
+Domo serves apps from a subpath, not root. Configure Vite for relative paths:
+
+```javascript
+// vite.config.js
+export default defineConfig({
+  base: './',
+  // ... other config
+});
+```
+
+---
+
+## Routing (React Router)
+
+If using client-side routing, prefer `HashRouter` for App Platform:
+
+```javascript
+import { HashRouter } from 'react-router-dom';
+
+// HashRouter works without server rewrites
+<HashRouter>
+  <App />
+</HashRouter>
+```
+
+`BrowserRouter` requires server-side rewrite rules which Domo doesn't provide by default.
+
+---
+
+## Project-Specific Instructions
+
+Add your project-specific rules below this line:
+
+---
+

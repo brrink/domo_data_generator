@@ -1,0 +1,97 @@
+dataset:
+  name: HubSpot - Contacts
+  domo_id: 7876cf46-205e-44ff-a236-d1ea2c8aad46
+  source_type: hubspot
+  description: Sample HubSpot CRM contact data with lifecycle stages
+  row_count: 2000
+schema:
+- name: ContactId
+  type: STRING
+  generator: sequence
+  template: HS-{i:06d}
+  min: 1
+- name: FirstName
+  type: STRING
+  generator: entity_ref
+  entity: person
+  field: first_name
+- name: LastName
+  type: STRING
+  generator: entity_ref
+  entity: person
+  field: last_name
+- name: Email
+  type: STRING
+  generator: entity_ref
+  entity: person
+  field: email
+- name: Company
+  type: STRING
+  generator: entity_ref
+  entity: company
+  field: name
+- name: JobTitle
+  type: STRING
+  generator: entity_ref
+  entity: person
+  field: title
+- name: Phone
+  type: STRING
+  generator: entity_ref
+  entity: person
+  field: phone
+- name: City
+  type: STRING
+  generator: entity_ref
+  entity: company
+  field: city
+- name: State
+  type: STRING
+  generator: entity_ref
+  entity: company
+  field: state
+- name: LifecycleStage
+  type: STRING
+  generator: hubspot_lifecycle
+- name: LeadStatus
+  type: STRING
+  generator: hubspot_lead_status
+- name: OriginalSource
+  type: STRING
+  generator: weighted_choice
+  choices:
+    Organic Search: 0.25
+    Paid Search: 0.15
+    Social Media: 0.15
+    Email Marketing: 0.12
+    Direct Traffic: 0.1
+    Referral: 0.1
+    Paid Social: 0.08
+    Offline Sources: 0.05
+- name: NumberOfPageviews
+  type: LONG
+  generator: random_int
+  min: 1
+  max: 200
+- name: NumberOfFormSubmissions
+  type: LONG
+  generator: random_int
+  min: 0
+  max: 10
+- name: CreateDate
+  type: DATETIME
+  generator: date_range
+  start_days_ago: 365
+  end_days_ahead: 0
+  rolling: true
+- name: LastActivityDate
+  type: DATE
+  generator: date_range
+  start_days_ago: 30
+  end_days_ahead: 0
+  rolling: true
+- name: AssociatedDeals
+  type: LONG
+  generator: random_int
+  min: 0
+  max: 5

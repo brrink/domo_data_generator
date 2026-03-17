@@ -1,0 +1,98 @@
+dataset:
+  name: Salesforce - Opportunities
+  domo_id: 7313058b-68fe-4253-bc3e-5b561e15c978
+  source_type: salesforce
+  description: Sample Salesforce opportunities representing sales pipeline
+  row_count: 2500
+schema:
+- name: OpportunityId
+  type: STRING
+  generator: sf_id
+  template: '006'
+- name: OpportunityName
+  type: STRING
+  generator: sf_opportunity_name
+- name: AccountName
+  type: STRING
+  generator: entity_ref
+  entity: company
+  field: name
+- name: ContactName
+  type: STRING
+  generator: entity_ref
+  entity: person
+  field: full_name
+- name: Stage
+  type: STRING
+  generator: weighted_choice
+  choices:
+    Prospecting: 0.12
+    Qualification: 0.12
+    Needs Analysis: 0.1
+    Proposal/Price Quote: 0.12
+    Negotiation/Review: 0.14
+    Closed Won: 0.25
+    Closed Lost: 0.15
+- name: Amount
+  type: DECIMAL
+  generator: random_decimal
+  min: 2500
+  max: 500000
+  precision: 2
+- name: Probability
+  type: DECIMAL
+  generator: stage_derived
+  source_column: Stage
+  mapping:
+    Prospecting: 10
+    Qualification: 20
+    Needs Analysis: 40
+    Proposal/Price Quote: 60
+    Negotiation/Review: 80
+    Closed Won: 100
+    Closed Lost: 0
+- name: CloseDate
+  type: DATE
+  generator: date_range
+  start_days_ago: 180
+  end_days_ahead: 120
+  rolling: true
+- name: CreatedDate
+  type: DATETIME
+  generator: date_range
+  start_days_ago: 365
+  end_days_ahead: 0
+  rolling: true
+- name: LeadSource
+  type: STRING
+  generator: random_choice
+  choices:
+  - Web
+  - Phone Inquiry
+  - Partner Referral
+  - Trade Show
+  - Email Campaign
+  - Social Media
+  - Advertisement
+- name: Type
+  type: STRING
+  generator: weighted_choice
+  choices:
+    New Business: 0.45
+    Existing Business: 0.3
+    Renewal: 0.25
+- name: OwnerId
+  type: STRING
+  generator: entity_ref
+  entity: sales_rep
+  field: rep_id
+- name: OwnerName
+  type: STRING
+  generator: entity_ref
+  entity: sales_rep
+  field: full_name
+- name: FiscalQuarter
+  type: STRING
+  generator: derived_from_date
+  source_column: CloseDate
+  format: Q{quarter} {year}

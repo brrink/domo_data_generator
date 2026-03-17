@@ -1,0 +1,63 @@
+dataset:
+  name: Google Analytics - Sessions
+  domo_id: e6da5a2a-c08f-4ab2-8c5c-dca19573ada0
+  source_type: google_analytics
+  description: Sample Google Analytics session-level data
+  row_count: 5000
+schema:
+- name: SessionId
+  type: STRING
+  generator: ga_session_id
+- name: Date
+  type: DATE
+  generator: date_range
+  start_days_ago: 90
+  end_days_ahead: 0
+  rolling: true
+- name: Source
+  type: STRING
+  generator: ga_source
+- name: Medium
+  type: STRING
+  generator: ga_medium
+- name: Campaign
+  type: STRING
+  generator: ga_campaign
+- name: Browser
+  type: STRING
+  generator: ga_browser
+- name: DeviceCategory
+  type: STRING
+  generator: ga_device_category
+- name: Country
+  type: STRING
+  generator: ga_country
+- name: LandingPage
+  type: STRING
+  generator: ga_landing_page
+- name: Pageviews
+  type: LONG
+  generator: ga_pageviews
+- name: SessionDuration
+  type: LONG
+  generator: ga_session_duration
+- name: BounceRate
+  type: DECIMAL
+  generator: ga_bounce_rate
+- name: IsNewUser
+  type: STRING
+  generator: weighted_choice
+  choices:
+    'Yes': 0.55
+    'No': 0.45
+- name: Transactions
+  type: LONG
+  generator: random_int
+  min: 0
+  max: 3
+- name: Revenue
+  type: DECIMAL
+  generator: random_decimal
+  min: 0
+  max: 500
+  precision: 2

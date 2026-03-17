@@ -1,0 +1,73 @@
+dataset:
+  name: Google Ads - Campaign Performance
+  domo_id: ab2b03de-d89b-4445-a5b5-cd9c0b405a9e
+  source_type: google_ads
+  description: Sample Google Ads campaign performance data
+  row_count: 3000
+schema:
+- name: Date
+  type: DATE
+  generator: date_range
+  start_days_ago: 90
+  end_days_ahead: 0
+  rolling: true
+- name: CampaignName
+  type: STRING
+  generator: entity_ref
+  entity: campaign
+  field: name
+- name: AdGroupId
+  type: STRING
+  generator: ad_group_id
+- name: Keyword
+  type: STRING
+  generator: ad_keyword
+- name: AdHeadline
+  type: STRING
+  generator: ad_headline
+- name: Impressions
+  type: LONG
+  generator: impressions
+  min: 100
+  max: 50000
+- name: Clicks
+  type: LONG
+  generator: clicks_from_impressions
+  source_column: Impressions
+- name: CostPerClick
+  type: DECIMAL
+  generator: cost_per_click
+  min: 0.5
+  max: 12.0
+- name: Spend
+  type: DECIMAL
+  generator: ad_spend
+  refs:
+  - Clicks
+  - CostPerClick
+- name: Conversions
+  type: LONG
+  generator: conversions_from_clicks
+  source_column: Clicks
+- name: ConversionValue
+  type: DECIMAL
+  generator: random_decimal
+  min: 0
+  max: 5000
+  precision: 2
+- name: QualityScore
+  type: LONG
+  generator: random_int
+  min: 1
+  max: 10
+- name: AdFormat
+  type: STRING
+  generator: weighted_choice
+  choices:
+    Search: 0.5
+    Display: 0.25
+    Video: 0.15
+    Shopping: 0.1
+- name: TargetingType
+  type: STRING
+  generator: targeting_type
