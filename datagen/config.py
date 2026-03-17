@@ -16,6 +16,7 @@ DOMO_CLIENT_SECRET = os.getenv("DOMO_CLIENT_SECRET", "")
 DOMO_API_HOST = os.getenv("DOMO_API_HOST", "api.domo.com")
 DOMO_INSTANCE = os.getenv("DOMO_INSTANCE", "")
 DOMO_SET_CONNECTOR_TYPE = os.getenv("DOMO_SET_CONNECTOR_TYPE", "false").lower() == "true"
+DOMO_DEVELOPER_TOKEN = os.getenv("DOMO_DEVELOPER_TOKEN", "")
 
 # Directories
 CATALOG_DIR = PROJECT_ROOT / "catalog"
