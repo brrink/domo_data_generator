@@ -332,6 +332,119 @@ def status(
     console.print(table)
 
 
+# --- discover-types ---
+
+
+@app.command("discover-types")
+def discover_types(
+    search: Optional[str] = typer.Argument(None, help="Search term to filter providers (e.g. 'salesforce', 'google')"),
+) -> None:
+    """Search Domo's available connector/provider types to find the correct key for icon mapping."""
+    from datagen.domo_client import DomoClient, SOURCE_TYPE_MAP
+
+    client = DomoClient()
+    try:
+        providers = client.list_providers(search=search)
+    except Exception as e:
+        console.print(f"[red]Error fetching providers: {e}[/red]")
+        raise typer.Exit(1)
+
+    if not providers:
+        console.print(f"[yellow]No providers found matching '{search}'[/yellow]")
+        return
+
+    title = f"Domo Providers matching '{search}'" if search else "Domo Providers"
+    table = Table(title=title)
+    table.add_column("Key", style="cyan")
+    table.add_column("Name")
+    table.add_column("Mapped?", justify="center")
+
+    mapped_keys = set(SOURCE_TYPE_MAP.values())
+    for p in providers:
+        is_mapped = "[green]yes[/green]" if p["key"] in mapped_keys else ""
+        table.add_row(p["key"], p["name"], is_mapped)
+
+    console.print(table)
+    console.print(f"\n{len(providers)} providers found")
+    console.print(
+        "\nTo use a key, add it to SOURCE_TYPE_MAP in domo_client.py "
+        "or set it as the source_type in a catalog YAML."
+    )
+
+
+# --- set-type ---
+
+
+@app.command("set-type")
+def set_type(
+    name: str = typer.Argument(help="Dataset name (YAML filename stem)"),
+    provider_key: Optional[str] = typer.Option(None, "--provider-key", help="Override the provider key instead of using SOURCE_TYPE_MAP"),
+    catalog_dir: Optional[Path] = typer.Option(None, "--catalog-dir"),
+) -> None:
+    """Set the connector type/icon on an existing Domo dataset."""
+    from datagen.catalog_loader import load_one
+    from datagen.domo_client import DomoClient, SOURCE_TYPE_MAP
+
+    defn = load_one(name, catalog_dir)
+    if not defn.dataset.domo_id:
+        console.print(f"[red]Dataset '{name}' has no domo_id. Run 'datagen create-dataset {name}' first.[/red]")
+        raise typer.Exit(1)
+
+    key = provider_key or SOURCE_TYPE_MAP.get(defn.dataset.source_type)
+    if not key:
+        console.print(
+            f"[red]No provider key for source_type '{defn.dataset.source_type}'. "
+            f"Use --provider-key or run 'datagen discover-types {defn.dataset.source_type}' to find it.[/red]"
+        )
+        raise typer.Exit(1)
+
+    client = DomoClient()
+    success = client.set_dataset_type(
+        defn.dataset.domo_id, defn.dataset.source_type, provider_key_override=provider_key
+    )
+    if success:
+        console.print(f"[green]Set {name} ({defn.dataset.domo_id}) type to '{key}'[/green]")
+    else:
+        console.print(f"[red]Failed to set type. Run with --verbose for details.[/red]")
+
+
+@app.command("set-type-all")
+def set_type_all(
+    catalog_dir: Optional[Path] = typer.Option(None, "--catalog-dir"),
+) -> None:
+    """Set the connector type/icon on all Domo datasets that have a domo_id."""
+    from datagen.catalog_loader import load_all as load_all_catalogs
+    from datagen.domo_client import DomoClient, SOURCE_TYPE_MAP
+
+    definitions = load_all_catalogs(catalog_dir)
+    client = DomoClient()
+    results = {"success": 0, "failed": 0, "skipped": 0}
+
+    for stem, defn in definitions.items():
+        if not defn.dataset.domo_id:
+            console.print(f"  [dim]Skipping {stem} (no domo_id)[/dim]")
+            results["skipped"] += 1
+            continue
+
+        key = SOURCE_TYPE_MAP.get(defn.dataset.source_type)
+        if not key:
+            console.print(f"  [yellow]Skipping {stem} (no mapping for '{defn.dataset.source_type}')[/yellow]")
+            results["skipped"] += 1
+            continue
+
+        success = client.set_dataset_type(defn.dataset.domo_id, defn.dataset.source_type)
+        if success:
+            console.print(f"  [green]{stem} -> {key}[/green]")
+            results["success"] += 1
+        else:
+            console.print(f"  [red]{stem} FAILED[/red]")
+            results["failed"] += 1
+
+    console.print(
+        f"\nDone: {results['success']} set, {results['failed']} failed, {results['skipped']} skipped"
+    )
+
+
 def cli() -> None:
     """Entry point for the CLI."""
     app()
