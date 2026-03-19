@@ -1,6 +1,6 @@
 dataset:
   name: Google Analytics - Sessions
-  domo_id: e6da5a2a-c08f-4ab2-8c5c-dca19573ada0
+  domo_id: 
   source_type: google_analytics
   description: Sample Google Analytics session-level data
   row_count: 5000

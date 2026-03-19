@@ -32,6 +32,7 @@ Edit `.env` with your Domo client credentials:
 ```
 DOMO_CLIENT_ID=your_client_id
 DOMO_CLIENT_SECRET=your_client_secret
+DOMO_DEVELOPER_TOKEN=your_developer_token #required for internal API call to update dataset type and icon
 DOMO_API_HOST=api.domo.com
 DOMO_INSTANCE=your_instance_name
 DOMO_SET_CONNECTOR_TYPE=false

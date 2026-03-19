@@ -1,6 +1,6 @@
 dataset:
   name: Google Ads - Campaign Performance
-  domo_id: ab2b03de-d89b-4445-a5b5-cd9c0b405a9e
+  domo_id: 
   source_type: google_ads
   description: Sample Google Ads campaign performance data
   row_count: 3000

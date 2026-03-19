@@ -1,6 +1,6 @@
 dataset:
   name: Salesforce - Contacts
-  domo_id: b582e09c-8f15-43f7-977a-c810f36f16c1
+  domo_id: 
   source_type: salesforce
   description: Sample Salesforce contacts linked to accounts
   row_count: 1500

@@ -1,6 +1,6 @@
 dataset:
   name: Salesforce - Accounts
-  domo_id: 30e3bef8-362c-490c-8f65-a5f7f763ccba
+  domo_id: 
   source_type: salesforce
   description: Sample Salesforce account data representing customer organizations
   row_count: 500

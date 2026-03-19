@@ -1,6 +1,6 @@
 dataset:
   name: Google Analytics - Page Views
-  domo_id: c187089b-25e3-4b52-8d8a-fbcd964212c9
+  domo_id: 
   source_type: google_analytics
   description: Sample Google Analytics page-level data
   row_count: 10000

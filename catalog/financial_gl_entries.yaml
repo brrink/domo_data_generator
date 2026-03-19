@@ -1,6 +1,6 @@
 dataset:
   name: NetSuite - General Ledger
-  domo_id: 6a794e81-71ad-4d3b-aecf-6fbaa5d59db1
+  domo_id: 
   source_type: netsuite
   description: Sample NetSuite-style general ledger journal entries
   row_count: 5000

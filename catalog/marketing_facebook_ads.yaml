@@ -1,6 +1,6 @@
 dataset:
   name: Facebook Ads - Campaign Performance
-  domo_id: d9953835-f2cf-4a6e-b0c9-3f9f2f575180
+  domo_id: 
   source_type: facebook_ads
   description: Sample Facebook/Meta Ads campaign performance data
   row_count: 2500
