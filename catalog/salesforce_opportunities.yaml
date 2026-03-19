@@ -1,6 +1,6 @@
 dataset:
   name: Salesforce - Opportunities
-  domo_id: 7313058b-68fe-4253-bc3e-5b561e15c978
+  domo_id: 
   source_type: salesforce
   description: Sample Salesforce opportunities representing sales pipeline
   row_count: 2500

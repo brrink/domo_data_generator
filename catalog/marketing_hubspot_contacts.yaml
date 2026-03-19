@@ -1,6 +1,6 @@
 dataset:
   name: HubSpot - Contacts
-  domo_id: 7876cf46-205e-44ff-a236-d1ea2c8aad46
+  domo_id: 
   source_type: hubspot
   description: Sample HubSpot CRM contact data with lifecycle stages
   row_count: 2000

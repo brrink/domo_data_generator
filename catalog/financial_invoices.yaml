@@ -1,6 +1,6 @@
 dataset:
   name: QuickBooks - Invoices
-  domo_id: 8a12226a-e300-4666-8919-aa2e77b62836
+  domo_id: 
   source_type: quickbooks
   description: Sample QuickBooks-style invoice data
   row_count: 3000
