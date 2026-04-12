@@ -1,167 +1,148 @@
 # Domo Sample Data Generator
 
-Generate realistic sample data from multiple business sources and upload it to Domo. Datasets replicate what real connectors look like — Salesforce, Google Analytics, QuickBooks, NetSuite, Google Ads, Facebook Ads, and HubSpot — complete with connector icons and cross-source referential integrity.
+Generate realistic sample data from multiple business sources and upload it to Domo. Datasets replicate what real connectors look like -- Salesforce, Google Analytics, QuickBooks, NetSuite, Google Ads, Facebook Ads, HubSpot, and more -- complete with connector icons and cross-source referential integrity.
 
 ## Features
 
-- **10 pre-built datasets** across 4 source categories (Salesforce, Google Analytics, Financial/ERP, Marketing/Ads)
-- **YAML-driven catalog** — add or modify datasets by editing simple YAML files
-- **Shared entity pool** — companies, people, products, and sales reps are consistent across all datasets
-- **Date rolling** — shift all date columns forward to keep data looking current without regenerating
-- **Domo integration** — create datasets, upload data (full replace), and set connector type/icon via the API
-- **Cron-friendly** — designed for scheduled runs to keep your Domo instance fresh
+- **18 pre-built datasets** across 6 source categories (Salesforce, Google Analytics, Financial/ERP, Marketing/Ads, Health, AdPoint)
+- **YAML-driven catalog** -- add or modify datasets by editing simple YAML files
+- **Shared entity pool** -- companies, people, products, and sales reps are consistent across all datasets
+- **Date rolling** -- shift date columns forward to keep data looking current without regenerating
+- **Domo integration** -- create datasets, upload data (full replace), and set connector type/icon
+- **Structured output** -- JSON (default), table, or YAML output for easy parsing by AI agents and scripts
+- **pipx installable** -- install globally and run from any directory
+
+## Install
+
+```bash
+# Recommended: install globally with pipx
+pipx install git+https://github.com/brrink/domo_data_generator.git
+
+# Or install with pip
+pip install git+https://github.com/brrink/domo_data_generator.git
+```
 
 ## Quick Start
 
-### 1. Install dependencies
+### 1. Initialize a working directory
 
 ```bash
-python3 -m venv .venv
-source .venv/bin/activate
-pip install -r requirements.txt
+mkdir my-domo-data && cd my-domo-data
+datagen init
 ```
 
-### 2. Configure Domo credentials
+This copies the built-in catalog definitions, a `.env` template, and creates a `data/` directory.
 
-```bash
-cp .env.example .env
-```
+### 2. Configure credentials
 
-Edit `.env` with your Domo client credentials (developer token is required for internal API call to update dataset type and icon):
+Edit `.env`:
 
 ```
+DOMO_INSTANCE=your_instance_name
+DOMO_DEVELOPER_TOKEN=your_developer_token
+
+# Required for data upload and dataset creation
 DOMO_CLIENT_ID=your_client_id
 DOMO_CLIENT_SECRET=your_client_secret
-DOMO_DEVELOPER_TOKEN=your_developer_token
-DOMO_API_HOST=api.domo.com
-DOMO_INSTANCE=your_instance_name
-DOMO_SET_CONNECTOR_TYPE=false
 ```
 
-To get client credentials, go to **Domo > Admin > Authentication > Client Credentials** and create a new client with the `data` and `dashboard` scopes.
+| Variable | Purpose | Required for |
+|----------|---------|-------------|
+| `DOMO_INSTANCE` | Your Domo instance name | All Domo operations |
+| `DOMO_DEVELOPER_TOKEN` | Developer token from Domo Admin | Connector icons, listing |
+| `DOMO_CLIENT_ID` | OAuth client ID | Dataset creation, data upload |
+| `DOMO_CLIENT_SECRET` | OAuth client secret | Dataset creation, data upload |
 
-### 3. Generate the entity pool
+To create OAuth credentials: **Domo > Admin > Authentication > Client credentials** -- create a client with `data` and `dashboard` scopes.
 
-```bash
-python -m datagen pool regenerate
-```
+To create a developer token: **Domo > Admin > Authentication > Access tokens**.
 
-This creates a shared pool of fake companies, people, products, sales reps, and campaigns in `data/entity_pool.json`. All datasets reference this pool for cross-source consistency.
-
-### 4. Generate data
-
-```bash
-# Generate all datasets
-python -m datagen generate --all
-
-# Generate a single dataset
-python -m datagen generate salesforce_opportunities
-```
-
-Generated CSV files are saved to `data/`.
-
-### 5. Create datasets in Domo
+### 3. Generate and upload
 
 ```bash
-# Create all datasets (skips any that already have a domo_id)
-python -m datagen create-dataset --all --skip-existing
-
-# Create a single dataset
-python -m datagen create-dataset salesforce_opportunities
-```
-
-This creates the datasets in Domo and writes the `domo_id` back into each YAML catalog file.
-
-### 6. Upload data to Domo
-
-```bash
-# Upload all datasets (full replace)
-python -m datagen upload --all
-
-# Upload a single dataset
-python -m datagen upload salesforce_opportunities
+datagen pool regenerate          # Create shared entity pool
+datagen generate --all           # Generate all datasets as CSV
+datagen create-dataset --all     # Create datasets in Domo
+datagen upload --all             # Upload data (full replace)
+datagen set-type-all             # Set connector icons
 ```
 
 ## CLI Reference
 
 ```
-python -m datagen [OPTIONS] COMMAND [ARGS]
+datagen [OPTIONS] COMMAND [ARGS]
 
-Commands:
-  generate        Generate sample data for one or all datasets
-  upload          Upload generated data to Domo (full replace)
-  create-dataset  Create dataset(s) in Domo from catalog definitions
-  roll-dates      Shift all rolling date columns to stay current
-  list            List all dataset definitions in the catalog
-  status          Show generation status for all datasets
-  pool            Manage the shared entity pool
-
-Global Options:
-  --verbose / -v  Enable verbose logging
+Options:
+  --verbose / -v        Enable verbose logging
+  --output / -o TEXT    Output format: json, table, yaml (default: json)
+  --yes / -y            Skip confirmation prompts
 ```
 
-### generate
+### Core Commands
 
 ```bash
-python -m datagen generate --all              # Generate all datasets
-python -m datagen generate <name>             # Generate one dataset
-python -m datagen generate --all --seed 42    # Reproducible generation
-python -m datagen generate --all --dry-run    # Preview without writing
+datagen init                               # Initialize working directory
+datagen generate --all                     # Generate all datasets
+datagen generate <name>                    # Generate one dataset
+datagen generate --all --seed 42           # Reproducible generation
+datagen generate --all --dry-run           # Preview without writing
+datagen upload --all                       # Upload all to Domo
+datagen upload <name>                      # Upload one dataset
+datagen create-dataset --all --skip-existing  # Create datasets in Domo
+datagen create-dataset <name>              # Create one dataset
+datagen roll-dates                         # Roll dates to today
+datagen roll-dates --anchor-date 2026-04-01   # Roll to specific date
 ```
 
-### upload
+### Informational Commands
 
 ```bash
-python -m datagen upload --all                # Upload all to Domo
-python -m datagen upload <name>               # Upload one dataset
+datagen list                    # List all catalog definitions
+datagen list --verbose          # Include column/schema details
+datagen status                  # Show generation state and CSV row counts
+datagen discover-types salesforce   # Search Domo provider types
 ```
 
-### create-dataset
+### Entity Pool Commands
 
 ```bash
-python -m datagen create-dataset --all --skip-existing
-python -m datagen create-dataset <name>
+datagen pool regenerate                     # Default sizes
+datagen pool regenerate --seed 99           # Custom seed
+datagen pool regenerate --company-count 500 # Custom pool sizes
+datagen pool show                           # Show pool summary
 ```
 
-### roll-dates
+### Connector Icon Commands
 
 ```bash
-python -m datagen roll-dates                          # Roll to today
-python -m datagen roll-dates --anchor-date 2026-04-01 # Roll to specific date
+datagen set-type <name>                    # Set icon on one dataset
+datagen set-type <name> --provider-key X   # Override provider key
+datagen set-type-all                       # Set icons on all datasets
 ```
 
-### list / status
+## Output Formats
+
+All commands emit structured data. The default is JSON for easy machine parsing:
 
 ```bash
-python -m datagen list              # Show catalog summary
-python -m datagen list --verbose    # Show column details for each dataset
-python -m datagen status            # Show generation state and CSV row counts
-```
-
-### pool
-
-```bash
-python -m datagen pool regenerate                     # Default sizes
-python -m datagen pool regenerate --seed 99           # Custom seed
-python -m datagen pool regenerate --company-count 500 # Custom pool sizes
-python -m datagen pool show                           # Show pool summary
+datagen list                      # JSON (default)
+datagen --output table list       # Rich table for humans
+datagen --output yaml list        # YAML
 ```
 
 ## Keeping Data Fresh
 
-Date rolling shifts all date columns marked `rolling: true` forward so the data always looks current. This avoids full regeneration — the same rows keep their relationships, only dates move.
-
-**Daily cron example:**
+Date rolling shifts columns marked `rolling: true` forward so data always looks current, without regenerating.
 
 ```bash
-# Add to crontab: run daily at 6am
-0 6 * * * cd /path/to/data_generator && .venv/bin/python -m datagen roll-dates && .venv/bin/python -m datagen upload --all
+# Daily cron: roll dates and re-upload at 6am
+0 6 * * * cd /path/to/project && datagen roll-dates && datagen upload --all
 ```
 
 ## Included Datasets
 
-| Dataset | Source Type | Default Rows |
-|---------|-----------|-------------|
+| Dataset | Source Type | Rows |
+|---------|-----------|------|
 | Salesforce - Accounts | salesforce | 500 |
 | Salesforce - Contacts | salesforce | 1,500 |
 | Salesforce - Opportunities | salesforce | 2,500 |
@@ -172,10 +153,18 @@ Date rolling shifts all date columns marked `rolling: true` forward so the data 
 | Google Ads - Campaign Performance | google_ads | 3,000 |
 | Facebook Ads - Campaign Performance | facebook_ads | 2,500 |
 | HubSpot - Contacts | hubspot | 2,000 |
+| Marketing - Market Leads | marketo | 2,500 |
+| Marketo - Leads | marketo | 3,000 |
+| Health Portal - Demographics | health | 15 |
+| Health Portal - Lab Results | health | 1,470 |
+| Health Portal - Vitals | health | 5,250 |
+| AdPoint - Orders | custom | 150 |
+| AdPoint - Line Items | custom | 500 |
+| AdPoint - Flights | custom | 2,000 |
 
 ## Adding a New Dataset
 
-Create a new YAML file in `catalog/`. Here's a minimal example:
+Create a YAML file in your local `catalog/` directory:
 
 ```yaml
 dataset:
@@ -220,19 +209,19 @@ schema:
     rolling: true
 ```
 
-Then run:
+Then generate and upload:
 
 ```bash
-python -m datagen generate jira_issues
-python -m datagen create-dataset jira_issues
-python -m datagen upload jira_issues
+datagen generate jira_issues
+datagen create-dataset jira_issues
+datagen upload jira_issues
 ```
 
 ### Available Generators
 
 | Generator | Description | Key Parameters |
 |-----------|------------|----------------|
-| `uuid4` | Random UUID | — |
+| `uuid4` | Random UUID | -- |
 | `random_choice` | Pick from a list | `choices` (list) |
 | `weighted_choice` | Pick with weights | `choices` (dict of value: weight) |
 | `random_int` | Random integer | `min`, `max` |
@@ -250,8 +239,6 @@ python -m datagen upload jira_issues
 
 ### Entity Pool Types
 
-The shared entity pool contains these entity types that can be referenced via `entity_ref`:
-
 | Entity Type | Fields |
 |-------------|--------|
 | `company` | `id`, `account_id`, `name`, `domain`, `industry`, `size`, `city`, `state`, `annual_revenue`, `employee_count` |
@@ -260,31 +247,41 @@ The shared entity pool contains these entity types that can be referenced via `e
 | `sales_rep` | `id`, `rep_id`, `first_name`, `last_name`, `full_name`, `email`, `region` |
 | `campaign` | `id`, `name`, `channel`, `budget`, `status` |
 
-## Dataset Type / Connector Icon
+## Authentication
 
-By default, datasets created via the API show a generic "API" icon in Domo. Setting `DOMO_SET_CONNECTOR_TYPE=true` in `.env` enables an attempt to set the connector type (e.g., Salesforce icon) using an undocumented Domo internal API. This requires `DOMO_INSTANCE` to be set and may not work in all environments. If it fails, it logs a warning and falls back gracefully.
+The CLI uses two auth mechanisms:
+
+- **Developer token** -- for the Domo instance API (connector icons, provider discovery). Set `DOMO_DEVELOPER_TOKEN`.
+- **OAuth client credentials** -- for the Domo public API (dataset creation, data upload). Set `DOMO_CLIENT_ID` and `DOMO_CLIENT_SECRET`.
+
+Offline commands (`generate`, `list`, `status`, `pool`, `roll-dates`, `init`) require no credentials.
 
 ## Project Structure
 
 ```
-data_generator/
-  .env                    # Domo credentials (not committed)
-  requirements.txt        # Python dependencies
-  catalog/                # YAML dataset definitions
-  data/                   # Generated CSVs and entity pool (gitignored)
+domo_data_generator/
+  pyproject.toml          # Package metadata and dependencies
+  .env.example            # Credential template
   datagen/
+    __init__.py           # Package version
+    __main__.py           # python -m datagen entry point
     cli.py                # Typer CLI with all commands
     config.py             # Environment and path configuration
     models.py             # Pydantic models for catalog schema
-    catalog_loader.py     # YAML parsing and validation
+    catalog_loader.py     # YAML parsing and domo_id state management
     entity_pool.py        # Shared entity generation and persistence
-    domo_client.py        # Domo API wrapper (pydomo + type setting)
+    domo_client.py        # Domo API client (httpx, dev token + OAuth)
     uploader.py           # Generation and upload orchestration
     date_roller.py        # Date shifting logic
+    output.py             # Structured output formatting (json/table/yaml)
+    state.py              # CLI application state
+    .env.example          # Bundled credential template (for init)
+    catalog/              # Bundled YAML dataset definitions
     generators/
       base.py             # Generator registry and built-in generators
       salesforce.py       # Salesforce-specific generators
       google_analytics.py # GA-specific generators
       financial.py        # QuickBooks/NetSuite generators
       marketing.py        # Google Ads/Facebook Ads/HubSpot generators
+      health.py           # Health portal generators
 ```
