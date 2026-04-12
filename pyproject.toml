@@ -1,0 +1,29 @@
+[build-system]
+requires = ["setuptools>=69", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "domo-data-generator"
+version = "0.1.0"
+description = "Generate realistic sample data for Domo"
+readme = "README.md"
+license = "MIT"
+requires-python = ">=3.10"
+dependencies = [
+    "httpx>=0.27.0",
+    "faker>=20.0",
+    "pandas>=2.0",
+    "typer[all]>=0.9",
+    "pyyaml>=6.0",
+    "pydantic>=2.0",
+    "python-dotenv>=1.0",
+]
+
+[project.scripts]
+datagen = "datagen.cli:run"
+
+[tool.setuptools.packages.find]
+include = ["datagen*"]
+
+[tool.setuptools.package-data]
+datagen = ["catalog/*.yaml", ".env.example"]

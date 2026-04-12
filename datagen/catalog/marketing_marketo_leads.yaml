@@ -1,0 +1,227 @@
+dataset:
+  name: Marketo - Leads
+  domo_id: 8e81e831-d657-4f4d-b405-db3d01e91c86
+  source_type: marketo
+  description: Sample Marketo lead data with scoring, lifecycle, and engagement tracking
+  row_count: 3000
+schema:
+- name: LeadId
+  type: STRING
+  generator: sequence
+  template: MKT-{i:07d}
+  min: 1
+- name: FirstName
+  type: STRING
+  generator: entity_ref
+  entity: person
+  field: first_name
+- name: LastName
+  type: STRING
+  generator: entity_ref
+  entity: person
+  field: last_name
+- name: Email
+  type: STRING
+  generator: entity_ref
+  entity: person
+  field: email
+- name: Company
+  type: STRING
+  generator: entity_ref
+  entity: company
+  field: name
+- name: JobTitle
+  type: STRING
+  generator: entity_ref
+  entity: person
+  field: title
+- name: Phone
+  type: STRING
+  generator: entity_ref
+  entity: person
+  field: phone
+- name: City
+  type: STRING
+  generator: entity_ref
+  entity: company
+  field: city
+- name: State
+  type: STRING
+  generator: entity_ref
+  entity: company
+  field: state
+- name: Country
+  type: STRING
+  generator: weighted_choice
+  choices:
+    United States: 0.6
+    Canada: 0.1
+    United Kingdom: 0.08
+    Germany: 0.05
+    Australia: 0.05
+    France: 0.04
+    India: 0.04
+    Brazil: 0.02
+    Japan: 0.02
+- name: Industry
+  type: STRING
+  generator: entity_ref
+  entity: company
+  field: industry
+- name: AnnualRevenue
+  type: DECIMAL
+  generator: entity_ref
+  entity: company
+  field: annual_revenue
+- name: NumberOfEmployees
+  type: LONG
+  generator: entity_ref
+  entity: company
+  field: employee_count
+- name: LeadSource
+  type: STRING
+  generator: weighted_choice
+  choices:
+    Web Form: 0.22
+    Content Download: 0.15
+    Webinar: 0.12
+    Trade Show: 0.1
+    Paid Search: 0.1
+    Social Media: 0.08
+    Referral: 0.07
+    Email Campaign: 0.06
+    Partner: 0.05
+    Direct Mail: 0.03
+    Cold Call: 0.02
+- name: LeadStatus
+  type: STRING
+  generator: weighted_choice
+  choices:
+    New: 0.2
+    Open: 0.18
+    Contacted: 0.15
+    Marketing Qualified: 0.15
+    Sales Qualified: 0.1
+    Nurture: 0.08
+    Recycled: 0.06
+    Disqualified: 0.05
+    Converted: 0.03
+- name: LeadScore
+  type: LONG
+  generator: random_int
+  min: 0
+  max: 100
+- name: BehaviorScore
+  type: LONG
+  generator: random_int
+  min: 0
+  max: 60
+- name: DemographicScore
+  type: LONG
+  generator: random_int
+  min: 0
+  max: 40
+- name: LeadPartition
+  type: STRING
+  generator: weighted_choice
+  choices:
+    Default: 0.7
+    Enterprise: 0.2
+    Partner: 0.1
+- name: AcquisitionProgram
+  type: STRING
+  generator: weighted_choice
+  choices:
+    2026-Q1-Content-Ebook: 0.12
+    2026-Q1-Webinar-AITrends: 0.1
+    2025-Q4-TradeShow-Dreamforce: 0.09
+    2026-Q1-PaidSearch-Brand: 0.11
+    2025-Q4-Email-Nurture: 0.08
+    2026-Q1-Social-LinkedIn: 0.09
+    2025-Q4-Content-Whitepaper: 0.08
+    2026-Q1-Webinar-DataStrategy: 0.07
+    2025-Q4-PaidSearch-Competitor: 0.06
+    2026-Q1-Partner-Referral: 0.05
+    2025-Q4-Event-Workshop: 0.05
+    Organic-Inbound: 0.1
+- name: MemberOfPrograms
+  type: LONG
+  generator: random_int
+  min: 1
+  max: 15
+- name: EmailOpens
+  type: LONG
+  generator: random_int
+  min: 0
+  max: 50
+- name: EmailClicks
+  type: LONG
+  generator: random_int
+  min: 0
+  max: 20
+- name: WebPageVisits
+  type: LONG
+  generator: random_int
+  min: 0
+  max: 120
+- name: FormFills
+  type: LONG
+  generator: random_int
+  min: 0
+  max: 8
+- name: UnsubscribedFlag
+  type: STRING
+  generator: weighted_choice
+  choices:
+    'false': 0.92
+    'true': 0.08
+- name: EmailInvalidFlag
+  type: STRING
+  generator: weighted_choice
+  choices:
+    'false': 0.95
+    'true': 0.05
+- name: DoNotCall
+  type: STRING
+  generator: weighted_choice
+  choices:
+    'false': 0.96
+    'true': 0.04
+- name: CreatedAt
+  type: DATETIME
+  generator: date_range
+  start_days_ago: 730
+  end_days_ahead: 0
+  rolling: true
+- name: UpdatedAt
+  type: DATETIME
+  generator: date_range
+  start_days_ago: 30
+  end_days_ahead: 0
+  rolling: true
+- name: LastActivityDate
+  type: DATE
+  generator: date_range
+  start_days_ago: 60
+  end_days_ahead: 0
+  rolling: true
+- name: LastInterestingMomentDate
+  type: DATE
+  generator: date_range
+  start_days_ago: 90
+  end_days_ahead: 0
+  rolling: true
+- name: OriginalReferrer
+  type: STRING
+  generator: weighted_choice
+  choices:
+    google.com: 0.3
+    linkedin.com: 0.18
+    direct: 0.15
+    bing.com: 0.08
+    facebook.com: 0.07
+    twitter.com: 0.05
+    partner-site.com: 0.05
+    youtube.com: 0.04
+    reddit.com: 0.03
+    other: 0.05

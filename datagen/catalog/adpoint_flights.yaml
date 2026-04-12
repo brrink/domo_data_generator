@@ -1,0 +1,179 @@
+dataset:
+  name: AdPoint - Flights
+  domo_id: 298609b4-a506-4c05-bcf2-b1912fbf4b30
+  source_type: custom
+  description: "Flight-level placement data for Seattle Times ad operations workflow\
+    \ POC \u2014 primary dataset for workflow triggering"
+  row_count: 2000
+schema:
+- name: FlightId
+  type: STRING
+  generator: sequence
+  template: FLT-{i:06d}
+- name: LineItemId
+  type: STRING
+  generator: sequence
+  template: LI-{i:05d}
+  min: 1
+  max: 500
+- name: OrderId
+  type: STRING
+  generator: sequence
+  template: ORD-2026-{i:04d}
+  min: 1
+  max: 150
+- name: ClientName
+  type: STRING
+  generator: entity_ref
+  entity: company
+  field: name
+- name: ClientIndustry
+  type: STRING
+  generator: entity_ref
+  entity: company
+  field: industry
+- name: ProductType
+  type: STRING
+  generator: weighted_choice
+  choices:
+    Google Search: 0.16
+    Facebook: 0.1
+    Audio Recording: 0.15
+    Programmatic Audio: 0.1
+    Seattle Times Print: 0.12
+    Display: 0.09
+    Email Deployment: 0.08
+    Branded Content: 0.06
+    Seattle Times Digital: 0.08
+    Video: 0.06
+- name: FlightStartDate
+  type: DATE
+  generator: date_range
+  start_days_ago: 60
+  end_days_ahead: 90
+  rolling: true
+- name: FlightEndDate
+  type: DATE
+  generator: date_range
+  start_days_ago: 0
+  end_days_ahead: 180
+  rolling: true
+- name: FlightBudget
+  type: DECIMAL
+  generator: random_decimal
+  min: 500
+  max: 25000
+  precision: 2
+- name: AdSize
+  type: STRING
+  generator: weighted_choice
+  choices:
+    300x250: 0.15
+    728x90: 0.1
+    160x600: 0.08
+    320x50: 0.07
+    970x250: 0.05
+    15sec Audio: 0.1
+    30sec Audio: 0.12
+    60sec Audio: 0.05
+    Full Page Print: 0.06
+    Half Page Print: 0.05
+    Quarter Page Print: 0.04
+    Email Banner: 0.06
+    Native Content: 0.04
+    Video Pre-roll: 0.03
+- name: Position
+  type: STRING
+  generator: weighted_choice
+  choices:
+    ROS: 0.2
+    Homepage: 0.12
+    Section Front: 0.1
+    Pre-roll: 0.1
+    Mid-roll: 0.08
+    Podcast Sponsorship: 0.08
+    Newsletter Header: 0.07
+    Newsletter Inline: 0.05
+    Print A Section: 0.06
+    Print Sports: 0.04
+    Print Business: 0.04
+    Branded Content Hub: 0.03
+    Interstitial: 0.03
+- name: AccountManager
+  type: STRING
+  generator: entity_ref
+  entity: sales_rep
+  field: full_name
+- name: AccountCoordinator
+  type: STRING
+  generator: random_choice
+  choices:
+  - Catherine Williams
+  - Brad Thompson
+  - Jessica Martinez
+  - Sarah Chen
+  - Mike O'Brien
+  - Emily Rodriguez
+- name: FlightStatus
+  type: STRING
+  generator: weighted_choice
+  choices:
+    Pending: 0.08
+    Pending Flight Start: 0.15
+    Scheduled: 0.2
+    In Fulfillment: 0.15
+    Live: 0.18
+    Complete: 0.16
+    Cancelled: 0.08
+- name: DaysUntilStart
+  type: LONG
+  generator: random_int
+  min: -60
+  max: 90
+- name: WorkflowPhase
+  type: STRING
+  generator: weighted_choice
+  choices:
+    Not Started: 0.2
+    Audio Build: 0.1
+    Resource Assignment: 0.08
+    Specs Gathering: 0.08
+    Script Development: 0.07
+    Client Review: 0.08
+    Production: 0.08
+    Internal QC: 0.06
+    Final Edit Review: 0.05
+    Champion Approval: 0.05
+    Trafficking: 0.05
+    Complete: 0.1
+- name: CurrentTaskOwner
+  type: STRING
+  generator: random_choice
+  choices:
+  - Catherine Williams
+  - Brad Thompson
+  - Jessica Martinez
+  - Sarah Chen
+  - Mike O'Brien
+  - Emily Rodriguez
+  - Unassigned
+- name: Priority
+  type: STRING
+  generator: weighted_choice
+  choices:
+    Standard: 0.65
+    Rush: 0.2
+    Urgent: 0.1
+    Low: 0.05
+- name: CreatedDate
+  type: DATETIME
+  generator: date_range
+  start_days_ago: 180
+  end_days_ahead: 0
+  rolling: true
+- name: LastModifiedDate
+  type: DATETIME
+  generator: date_range
+  start_days_ago: 30
+  end_days_ahead: 0
+  rolling: true

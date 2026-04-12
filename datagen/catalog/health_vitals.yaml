@@ -1,0 +1,29 @@
+dataset:
+  name: Health Portal - Vitals
+  domo_id: efebfd23-4ca1-41ea-9911-19ec4d99cf28
+  source_type: health
+  description: Patient vital sign readings over time for the health portal
+  row_count: 5000
+schema:
+- name: PatientID
+  type: STRING
+  generator: health_vital_init
+  choices:
+    num_patients: 15
+    num_dates: 50
+- name: ReadingType
+  type: STRING
+  generator: health_vital_field
+  field: ReadingType
+- name: Value
+  type: DECIMAL
+  generator: health_vital_field
+  field: Value
+- name: Unit
+  type: STRING
+  generator: health_vital_field
+  field: Unit
+- name: RecordedDate
+  type: DATE
+  generator: health_vital_field
+  field: RecordedDate

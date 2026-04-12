@@ -1,0 +1,31 @@
+dataset:
+  name: Health Portal - Demographics
+  domo_id: 223c93f6-9024-4212-87f4-f41503b4be54
+  source_type: health
+  description: Patient demographics for the health portal app
+  row_count: 15
+schema:
+- name: PatientID
+  type: STRING
+  generator: health_demographics
+  field: PatientID
+- name: FirstName
+  type: STRING
+  generator: health_demographics
+  field: FirstName
+- name: LastName
+  type: STRING
+  generator: health_demographics
+  field: LastName
+- name: DOB
+  type: DATE
+  generator: health_demographics
+  field: DOB
+- name: Gender
+  type: STRING
+  generator: health_demographics
+  field: Gender
+- name: MRN
+  type: STRING
+  generator: health_demographics
+  field: MRN

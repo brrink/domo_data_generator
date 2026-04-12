@@ -1,0 +1,227 @@
+dataset:
+  name: Marketing - Market Leads
+  domo_id: 60c0e8fe-d4f5-4b70-bed6-579f6dda5494
+  source_type: marketo
+  description: Market leads dataset tracking inbound and outbound lead acquisition,
+    qualification, and conversion funnel
+  row_count: 2500
+schema:
+- name: LeadId
+  type: STRING
+  generator: sequence
+  template: ML-{i:06d}
+  min: 1
+- name: FirstName
+  type: STRING
+  generator: entity_ref
+  entity: person
+  field: first_name
+- name: LastName
+  type: STRING
+  generator: entity_ref
+  entity: person
+  field: last_name
+- name: Email
+  type: STRING
+  generator: entity_ref
+  entity: person
+  field: email
+- name: Phone
+  type: STRING
+  generator: entity_ref
+  entity: person
+  field: phone
+- name: JobTitle
+  type: STRING
+  generator: entity_ref
+  entity: person
+  field: title
+- name: Company
+  type: STRING
+  generator: entity_ref
+  entity: company
+  field: name
+- name: Industry
+  type: STRING
+  generator: entity_ref
+  entity: company
+  field: industry
+- name: CompanySize
+  type: STRING
+  generator: entity_ref
+  entity: company
+  field: size
+- name: City
+  type: STRING
+  generator: entity_ref
+  entity: company
+  field: city
+- name: State
+  type: STRING
+  generator: entity_ref
+  entity: company
+  field: state
+- name: Country
+  type: STRING
+  generator: weighted_choice
+  choices:
+    United States: 0.62
+    Canada: 0.1
+    United Kingdom: 0.08
+    Germany: 0.05
+    Australia: 0.04
+    France: 0.03
+    India: 0.03
+    Brazil: 0.02
+    Japan: 0.02
+    Mexico: 0.01
+- name: LeadSource
+  type: STRING
+  generator: weighted_choice
+  choices:
+    Organic Search: 0.18
+    Paid Search: 0.14
+    Content Download: 0.12
+    Webinar Registration: 0.1
+    Social Media: 0.09
+    Trade Show: 0.08
+    Referral: 0.07
+    Email Campaign: 0.06
+    Partner: 0.05
+    Cold Outreach: 0.04
+    Direct Mail: 0.04
+    Chat Bot: 0.03
+- name: LeadChannel
+  type: STRING
+  generator: weighted_choice
+  choices:
+    Inbound: 0.6
+    Outbound: 0.25
+    Partner: 0.1
+    Event: 0.05
+- name: LeadStatus
+  type: STRING
+  generator: weighted_choice
+  choices:
+    New: 0.2
+    Contacted: 0.16
+    Engaged: 0.14
+    Marketing Qualified (MQL): 0.13
+    Sales Accepted (SAL): 0.1
+    Sales Qualified (SQL): 0.08
+    Opportunity: 0.06
+    Nurture: 0.05
+    Disqualified: 0.05
+    Converted: 0.03
+- name: LeadScore
+  type: LONG
+  generator: random_int
+  min: 0
+  max: 100
+- name: FitScore
+  type: LONG
+  generator: random_int
+  min: 0
+  max: 50
+- name: EngagementScore
+  type: LONG
+  generator: random_int
+  min: 0
+  max: 50
+- name: CampaignName
+  type: STRING
+  generator: entity_ref
+  entity: campaign
+  field: name
+- name: CampaignChannel
+  type: STRING
+  generator: entity_ref
+  entity: campaign
+  field: channel
+- name: ContentAsset
+  type: STRING
+  generator: weighted_choice
+  choices:
+    2026 Industry Report: 0.12
+    ROI Calculator: 0.1
+    Product Demo Video: 0.1
+    Best Practices Guide: 0.09
+    Webinar Recording: 0.09
+    Case Study: 0.08
+    Ebook - Digital Transformation: 0.08
+    Whitepaper - Market Trends: 0.07
+    Infographic - Key Stats: 0.06
+    Checklist - Getting Started: 0.06
+    Free Trial Signup: 0.05
+    Pricing Page Visit: 0.05
+    Blog Subscription: 0.05
+- name: TouchCount
+  type: LONG
+  generator: random_int
+  min: 1
+  max: 25
+- name: EmailOpens
+  type: LONG
+  generator: random_int
+  min: 0
+  max: 40
+- name: EmailClicks
+  type: LONG
+  generator: random_int
+  min: 0
+  max: 15
+- name: WebVisits
+  type: LONG
+  generator: random_int
+  min: 0
+  max: 80
+- name: FormSubmissions
+  type: LONG
+  generator: random_int
+  min: 0
+  max: 6
+- name: DaysInCurrentStage
+  type: LONG
+  generator: random_int
+  min: 0
+  max: 90
+- name: SalesRepAssigned
+  type: STRING
+  generator: entity_ref
+  entity: sales_rep
+  field: full_name
+- name: SalesRepRegion
+  type: STRING
+  generator: entity_ref
+  entity: sales_rep
+  field: region
+- name: EstimatedDealValue
+  type: DECIMAL
+  generator: random_decimal
+  min: 5000.0
+  max: 250000.0
+  precision: 2
+- name: CreatedDate
+  type: DATETIME
+  generator: date_range
+  start_days_ago: 365
+  end_days_ahead: 0
+  rolling: true
+- name: LastActivityDate
+  type: DATE
+  generator: date_range
+  start_days_ago: 45
+  end_days_ahead: 0
+  rolling: true
+- name: LastTouchDate
+  type: DATE
+  generator: date_range
+  start_days_ago: 30
+  end_days_ahead: 0
+  rolling: true
+- name: ConvertedDate
+  type: DATE
+  generator: date_range
+  start_days_ago: 60
+  end_days_ahead: 0
+  rolling: true

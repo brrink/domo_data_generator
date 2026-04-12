@@ -1,0 +1,91 @@
+dataset:
+  name: AdPoint - Orders
+  domo_id: 12c54a26-5828-4dcc-83a6-760552771fad
+  source_type: custom
+  description: Simulated LineUp AdPoint webhook order data for Seattle Times ad operations
+    POC
+  row_count: 150
+schema:
+- name: OrderId
+  type: STRING
+  generator: sequence
+  template: ORD-2026-{i:04d}
+- name: OrderName
+  type: STRING
+  generator: compound
+  template: '{company} - Campaign'
+  refs:
+  - company
+- name: ClientName
+  type: STRING
+  generator: entity_ref
+  entity: company
+  field: name
+- name: ClientIndustry
+  type: STRING
+  generator: entity_ref
+  entity: company
+  field: industry
+- name: TotalBudget
+  type: DECIMAL
+  generator: random_decimal
+  min: 5000
+  max: 250000
+  precision: 2
+- name: OrderStartDate
+  type: DATE
+  generator: date_range
+  start_days_ago: 90
+  end_days_ahead: 120
+  rolling: true
+- name: OrderEndDate
+  type: DATE
+  generator: date_range
+  start_days_ago: 0
+  end_days_ahead: 270
+  rolling: true
+- name: AccountManager
+  type: STRING
+  generator: entity_ref
+  entity: sales_rep
+  field: full_name
+- name: AccountCoordinator
+  type: STRING
+  generator: random_choice
+  choices:
+  - Catherine Williams
+  - Brad Thompson
+  - Jessica Martinez
+  - Sarah Chen
+  - Mike O'Brien
+  - Emily Rodriguez
+- name: ProductTypes
+  type: STRING
+  generator: weighted_choice
+  choices:
+    Google Search: 0.15
+    Google Search, Facebook: 0.1
+    Audio Recording: 0.12
+    Audio Recording, Programmatic Audio: 0.08
+    Programmatic Audio: 0.08
+    Seattle Times Print: 0.1
+    Display: 0.08
+    Email Deployment: 0.07
+    Branded Content: 0.06
+    Google Search, Display, Email Deployment: 0.05
+    Seattle Times Print, Display: 0.05
+    Facebook, Display: 0.06
+- name: OrderStatus
+  type: STRING
+  generator: weighted_choice
+  choices:
+    Confirmed: 0.55
+    In Progress: 0.25
+    Complete: 0.12
+    Cancelled: 0.08
+- name: CreatedDate
+  type: DATETIME
+  generator: date_range
+  start_days_ago: 180
+  end_days_ahead: 0
+  rolling: true

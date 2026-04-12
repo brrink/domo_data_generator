@@ -1,0 +1,41 @@
+dataset:
+  name: Health Portal - Lab Results
+  domo_id: 5e9d9604-e49d-49ba-b1b6-7295c17a173f
+  source_type: health
+  description: Lab test results with reference ranges and status for the health portal
+  row_count: 1500
+schema:
+- name: PatientID
+  type: STRING
+  generator: health_lab_init
+  choices:
+    num_patients: 15
+    num_dates: 7
+- name: TestName
+  type: STRING
+  generator: health_lab_field
+  field: TestName
+- name: Result
+  type: DECIMAL
+  generator: health_lab_field
+  field: Result
+- name: Unit
+  type: STRING
+  generator: health_lab_field
+  field: Unit
+- name: ReferenceRangeLow
+  type: DECIMAL
+  generator: health_lab_field
+  field: ReferenceRangeLow
+- name: ReferenceRangeHigh
+  type: DECIMAL
+  generator: health_lab_field
+  field: ReferenceRangeHigh
+- name: CollectionDate
+  type: DATE
+  generator: health_lab_field
+  field: CollectionDate
+- name: Status
+  type: STRING
+  generator: health_lab_field
+  field: Status

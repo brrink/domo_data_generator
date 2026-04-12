@@ -22,6 +22,7 @@ import datagen.generators.salesforce  # noqa: F401
 import datagen.generators.google_analytics  # noqa: F401
 import datagen.generators.financial  # noqa: F401
 import datagen.generators.marketing  # noqa: F401
+import datagen.generators.health  # noqa: F401
 
 logger = logging.getLogger(__name__)
 
