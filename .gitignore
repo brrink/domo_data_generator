@@ -2,6 +2,8 @@
 *.md
 !README.md
 
+# stupid macos finder
+.DS_Store
 
 # Generated data output
 data/
