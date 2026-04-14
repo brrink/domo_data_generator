@@ -1,6 +1,8 @@
-# md instruction files (all except README.md)
+# md instruction files (keep project docs, ignore the rest)
 *.md
 !README.md
+!SKILL.md
+!DATASET_PROMPT_TEMPLATE.md
 
 # stupid macos finder
 .DS_Store
